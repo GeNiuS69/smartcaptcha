@@ -1,0 +1,6 @@
+source 'https://rubygems.org'
+
+gem 'sinatra'
+gem 'smartcaptcha', require: 'smartcaptcha/rails', path: '../..'
+gem 'puma'
+gem 'dotenv'
