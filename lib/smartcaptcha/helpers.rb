@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Smartcaptcha
   module Helpers
     DEFAULT_ERRORS = {

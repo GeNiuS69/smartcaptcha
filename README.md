@@ -1,24 +1,77 @@
-# Smartcaptcha
+# SmartCaptcha
 
-TODO: Delete this and the text below, and describe your gem
+This gem provides helper methods for the [Yandex SmartCaptcha](https://cloud.yandex.com/en/services/smartcaptcha).
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/smartcaptcha`. To experiment with that code, run `bin/console` for an interactive prompt.
+In your views you can use the `recaptcha_tags` method to embed the needed javascript, and you can validate in your controllers with `verify_recaptcha` or `verify_recaptcha!`, which raises an error on failure.
+
+This is adaptation of [reCAPTCHA](https://github.com/ambethia/recaptcha). This service has a lot of difference that's why it isn't fork or PR.
 
 ## Installation
 
-TODO: Replace `UPDATE_WITH_YOUR_GEM_NAME_PRIOR_TO_RELEASE_TO_RUBYGEMS_ORG` with your gem name right after releasing it to RubyGems.org. Please do not do it earlier due to security reasons. Alternatively, replace this section with instructions to install your gem from git if you don't plan to release to RubyGems.org.
+Add
 
-Install the gem and add to the application's Gemfile by executing:
+    gem 'smartcaptcha', github: 'https://github.com/GeNiuS69/smartcaptcha'
+to your Gemfile and run
 
-    $ bundle add UPDATE_WITH_YOUR_GEM_NAME_PRIOR_TO_RELEASE_TO_RUBYGEMS_ORG
+    bundle install
 
-If bundler is not being used to manage dependencies, install the gem by executing:
+## Obtaining a key
 
-    $ gem install UPDATE_WITH_YOUR_GEM_NAME_PRIOR_TO_RELEASE_TO_RUBYGEMS_ORG
+[Guide to obtain keys.](https://cloud.yandex.com/en/docs/smartcaptcha/operations/get-keys)
+
+## Sinatra / Rack / Ruby installation
+
+See [sinatra demo](/demo/sinatra) for details.
+
+ - add `gem 'smartcaptcha', github: 'https://github.com/GeNiuS69/smartcaptcha'` to `Gemfile`
+ - set env variables
+ - `include Smartcaptcha::Adapters::ViewMethods` where you need `recaptcha_tags`
+ - `include Smartcaptcha::Adapters::ControllerMethods` where you need `verify_recaptcha`
 
 ## Usage
 
-TODO: Write usage instructions here
+### `smartcaptcha_tags`
+
+The following options are available:
+
+| Option              | Description |
+|---------------------|-------------|
+| `:site_key`         | Override site API key from configuration |
+| `:id`               | Specify an html id attribute (default: `nil`) |
+| `:callback`         | Optional. Name of success callback function, executed when the user submits a successful response |
+
+[JavaScript resource (captcha.js) parameters](https://cloud.yandex.com/en/docs/smartcaptcha/concepts/widget-methods#common-method):
+
+| Option              | Description |
+|---------------------|-------------|
+| `:hl`               | Optional. Forces the widget to render in a specific language. Auto-detects the user's language if unspecified. |
+| `:script_async`     | Set to `false` to load the external `captcha.js` resource synchronously. (default: `true`) |
+| `:script_defer`     | Set to `true` to defer loading of external `captcha.js` until HTML document has been parsed. (default: `true`) |
+
+Any unrecognized options will be added as attributes on the generated tag.
+
+Note that you cannot submit/verify the same response token more than once or you will get a
+`timeout-or-duplicate` error code. If you need reset the captcha and generate a new response token,
+then you need to call `window.smartCaptcha.reset()`.
+
+### `verify_recaptcha`
+
+This method returns `true` or `false` after processing the response token from the SmartCaptcha widget.
+This is usually called from your controller, as seen [above](#rails-installation).
+
+
+Some of the options available:
+
+| Option                    | Description |
+|---------------------------|-------------|
+| `:message`                | Custom error message.
+| `:env`                    | Current environment. The request to verify will be skipped if the environment is specified in configuration under `skip_verify_env`
+| `:json`                   | Boolean; defaults to false; if true, will submit the verification request by POST with the request data in JSON
+
+
+### `invisible_smartcaptcha_tags`
+
+In progress
 
 ## Development
 
@@ -28,12 +81,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/smartcaptcha. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/[USERNAME]/smartcaptcha/blob/master/CODE_OF_CONDUCT.md).
-
+Bug reports and pull requests are welcome on GitHub at https://github.com/GeNiuS69/smartcaptcha.
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
-
-## Code of Conduct
-
-Everyone interacting in the Smartcaptcha project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/smartcaptcha/blob/master/CODE_OF_CONDUCT.md).
